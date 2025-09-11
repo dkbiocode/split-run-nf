@@ -71,7 +71,7 @@ process PROCESS_SPLIT {
     
     output:
     path "${split_file.baseName}_stats.txt", emit: stats
-    path "${split_file.baseName}_processed.fastq", emit: processed_fastq
+    path "${split_file.baseName}.out", emit: processed_fastq
     
     script:
     """
@@ -86,20 +86,17 @@ process PROCESS_SPLIT {
     echo "Total sequences: \$(( \$(wc -l < ${split_file}) / 4 ))" >> ${split_file.baseName}_stats.txt
     echo "Processing started at: \$(date)" >> ${split_file.baseName}_stats.txt
     
-    # Example: simple quality filtering using seqkit (more efficient than awk)
-    # This is just an example - replace with your actual processing
-    # seqkit seq -Q 20 -j ${task.cpus} ${split_file} > ${split_file.baseName}_processed.fastq
-    seqkit stats -j ${task.cpus} ${split_file} > ${split_file.baseName}_processed.fastq
+    run_trf.sh ${split_file} ${split_file.baseName}.out
     
     echo "Processing completed at: \$(date)" >> ${split_file.baseName}_stats.txt
-    echo "Processed sequences: \$(( \$(wc -l < ${split_file.baseName}_processed.fastq) / 4 ))" >> ${split_file.baseName}_stats.txt
+    echo "Processed sequences: \$(( \$(wc -l < ${split_file.baseName}.out) / 4 ))" >> ${split_file.baseName}_stats.txt
     """
 }
 
 // Process to combine results (optional)
 process COMBINE_RESULTS {
     tag "Combining results"
-    publishDir "${params.outdir}/final", mode: 'copy'
+    publishDir "${params.outdir}/final", mode: 'link'
     
     input:
     path stats_files
@@ -107,7 +104,7 @@ process COMBINE_RESULTS {
     
     output:
     path "combined_stats.txt", emit: combined_stats
-    path "combined_processed.fastq", emit: combined_fastq
+    path "combined_processed.out", emit: combined_fastq
     
     script:
     """
@@ -123,10 +120,10 @@ process COMBINE_RESULTS {
     done
     
     # Combine all processed FASTQ files
-    cat ${processed_fastq_files} > combined_processed.fastq
+    cat ${processed_fastq_files} > combined_processed.out
     
     echo "=== Final Summary ===" >> combined_stats.txt
-    echo "Total processed sequences: \$(( \$(wc -l < combined_processed.fastq) / 4 ))" >> combined_stats.txt
+    echo "Total processed sequences: \$(( \$(wc -l < combined_processed.out) / 4 ))" >> combined_stats.txt
     """
 }
 
