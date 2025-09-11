@@ -18,12 +18,12 @@ export NXF_WORK=$TMPDIR # TMPDIR
 mkdir -p slurm_logs
 
 # Run the pipeline
-nextflow run pipeline_v7.nf \
+#   -resume \
+nextflow run main.nf \
     --input_fastq $1 \
-    --num_splits 32 \
+    --num_splits 64 \
     --outdir results \
     -profile slurm_standard \
-    -resume \
     -with-report pipeline_report.html \
     -with-trace pipeline_trace.txt \
     -with-timeline pipeline_timeline.html \
