@@ -5,6 +5,12 @@ Split a fastq file (using `seqkit split2`), run a user-provided script in bin/, 
 This pipeline is built around the task of splitting fastq files for parallel processing, as some tools (such as trf) do not natively support parallelization. 
 However, many tasks can be distributed into different processes by dividing the source data. This pipeline accomplishes that.
 
+### Requirements
+
+* nextflow
+* seqkit
+* Your script's dependencies
+
 ### Add your script
 A script for running trf and processing the output is currently provided as an example. Replace those (or simply add) your custom script to the bin/ directory.
 The script must take two arguments like so:
