@@ -1,5 +1,7 @@
 ## split-run-nf
 
+![DAG for workflow](img/nf-seq-split-run-dag.png)
+
 Split a fastq file (using `seqkit split2`), run a user-provided script in bin/, and join output.
 
 This pipeline is built around the task of splitting fastq files for parallel processing, as some tools (such as trf) do not natively support parallelization. 
